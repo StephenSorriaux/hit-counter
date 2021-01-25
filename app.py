@@ -1,9 +1,11 @@
 import time
 import redis
+from redis.sentinel import Sentinel
 from flask import Flask
 
 app = Flask(__name__)
-cache = redis.Redis(host='redis-lb', port=6379)
+sentinel = Sentinel([('rfs-redisfailover', 26379)], socket_timeout=0.1)
+cache = sentinel.master_for('mymaster', socket_timeout=0.1)
 
 
 def get_hit_count():
